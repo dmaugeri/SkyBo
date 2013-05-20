@@ -9,6 +9,7 @@ import logging
 import subprocess
 import utils
 import config
+import os
 
 logger = logging.getLogger("skybo")
 class UNIXScriptModule:
@@ -21,12 +22,16 @@ class UNIXScriptModule:
         self.name = name
         self.path = path
         
+    @staticmethod
+    def isValid(self, path):
+        return os.access(path, os.X_OK)
+        
     def run(self, msg, args, callback):
         """
         Method to run the unix script
         
         :param: msg is the skype msg object that told the bot to run the command
-        :param: args is the arguments sent to the message
+        :param: args is the arguments sent to the message it must be an array
         :param: callback is the callback function that gets executed after the command finishes running
                 it must have a value as a parameter that represents the result
         """
@@ -100,7 +105,8 @@ class ManagedExecThread(threading.Thread):
             return self.callback(self.default)
         else:
             out = self.process.communicate()[0]
-            return self.callback(out)
+            return self.callback(out)        
+        
    
 def callback(val):
     print val
