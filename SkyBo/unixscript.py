@@ -53,10 +53,10 @@ class ManagedExecThread(threading.Thread):
         """
         Thread constructor
         
-        :param: cmd is the command being sent to run
-        :param: default value that is returned to the callback interface
-        :param: timeout is the amount of time the command running has to execute
-        :param: callback the callback interface that gets called after the thread is finished running
+        :param cmd: is the command being sent to run
+        :param default: value that is returned to the callback interface
+        :param timeout: is the amount of time the command running has to execute
+        :param callback: the callback interface that gets called after the thread is finished running
                 it must take in a string a value as a parameter that is a result
         """
         
@@ -100,7 +100,7 @@ class ManagedExecThread(threading.Thread):
             return self.callback(out)        
         
    
-def callback(val):
+def _callback(val):
     print val
          
 def main():
@@ -109,7 +109,7 @@ def main():
     is timed out because it expects a Skype4Py message instance
     """
     unix = UNIXScriptModule("listing", "ls", "ls")
-    unix.run(["-l"], callback)
+    unix.run(["-l"], _callback)
         
 if __name__ == '__main__':
     main()
