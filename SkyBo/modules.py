@@ -22,6 +22,15 @@ class UNIXScriptModule:
         self.path = path
         
     def run(self, msg, args, callback):
+        """
+        Method to run the unix script
+        
+        :param: msg is the skype msg object that told the bot to run the command
+        :param: args is the arguments sent to the message
+        :param: callback is the callback function that gets executed after the command finishes running
+                it must have a value as a parameter that represents the result
+        """
+        
         
         logger.debug('Running command line program %s: with arguments %s' %(self.name, "".join(args)))
         
@@ -44,6 +53,16 @@ class ManagedExecThread(threading.Thread):
     
     def __init__(self, cmd, default, timeout, callback):
         threading.Thread.__init__(self)
+        """
+        Thread constructor
+        
+        :param: cmd is the command being sent to run
+        :param: default value that is returned to the callback interface
+        :param: timeout is the amount of time the command running has to execute
+        :param: callback the callback interface that gets called after the thread is finished running
+                it must take in a string a value as a parameter that is a result
+        """
+        
         self.cmd = cmd
         self.default = default
         self.timeout = timeout
@@ -66,9 +85,14 @@ class ManagedExecThread(threading.Thread):
         terminate the subprocess and call the callback function
         
         This method is ran outside of the class
+        
+        if timeout is negative, just run the function
         """
         self.start()
-        self.join(self.timeout)
+        if self.timeout < 0:
+            self.join()
+        else:
+            self.join(self.timeout)
         
         if self.isAlive():
             logger.warn('The external command timed out')
