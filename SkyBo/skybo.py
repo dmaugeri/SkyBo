@@ -53,9 +53,9 @@ class SkyBo:
         """
         Send Message to chat
         
-        :param: chat_id is the string id of a chat
+        :param chat_id: is the string id of a chat
         
-        :param: msg is a UTF-8 encoded string
+        :param msg: is a UTF-8 encoded string
         """
         try:
             self.chats[chat_id].SendMessage(msg)
