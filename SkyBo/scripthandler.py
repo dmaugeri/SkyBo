@@ -17,25 +17,39 @@ class ScriptHandler:
         '''
         Constructor
         '''   
-        #used so the same script isn't included twice
+        #used so the same script isn't included twice with config COMMANDS and CUSTOM_UNIX_SCRIPTS
         self._paths = set([])
         self._scripts = {}
     
     def load_script(self, filename, path, command):
+        """
+        Basic function to load a script 
         
+        :param filename: filename of the script
+        :param path: path of the script
+        :param command: command to run the script
+        
+        :return: an instance of a unix script wrapper that can be run
+        """
         if unixscript.UNIXScriptModule.isValid(self, path):
             return unixscript.UNIXScriptModule(filename, path, command)
         else:
             raise RuntimeError('Script: %s cannot be executed' %(filename))
         
     def _loadCommands(self):
+        """
+        Loads all Commands in the config.COMMANDS variable, if the variable doesn't exist in the config file
+        just return and warn the user
+        
+        :return: True if COMMANDS exists and has values in it otherwise False
+        """
         
         logger.debug("loading all custom commands defined in COMMANDS...")
         commandDict = None
         
         if not 'COMMANDS' in vars(config):
             logger.warn("No COMMANDS variable defined in config")
-            return
+            return False
         else:
             commandDict = config.COMMANDS 
         
@@ -48,7 +62,6 @@ class ScriptHandler:
         for command in commands:
             path = commandDict[command]
             filename = os.path.split(path)[1]
-            print path
             self._paths.add(path)
             self._scripts[command] = self.load_script(filename, path, command)
             logger.info('Loaded script: %s with command: %s' %(filename, command))            
@@ -57,22 +70,35 @@ class ScriptHandler:
         return True
     
     def load_custom_scripts(self):
+        """
+        Function used to load all scripts defined in the Config file including
+        the COMMANDS variable and CUSTOM_SCRIPTS variable
         
+        If there is not 'CUSTOM_SCRIPTS' variable defined sends a warning and returns _scripts which is empty
+        
+        :return: a dictionary of script instances
+        """
         self.unload_scripts()
         self._loadCommands()
         
-        for folder in config.CUSTOM_UNIX_SCRIPTS:
+        customScripts = None
+        
+        if not 'CUSTOM_SCRIPTS' in vars(config):
+            logger.warn("No CUSTOM_SCRIPTS variable defined in the config")
+            return self._scripts
+        else:
+            customScripts = config.CUSTOM_SCRIPTS
+        
+        for folder in customScripts:
             listing = os.listdir(folder)
             for script in listing:
                 fullpath = os.path.join(folder, script)
-                print fullpath
+
                 if 'COMMANDS' in vars(config) and set([fullpath]) <= self._paths:
-                    print "test"
                     continue
                 
                 #to access the file extension use index 1, use this possibly to add support for multiple languages
                 filename = os.path.splitext(script)[0]
-                print filename
                 script = self.load_script(filename, fullpath, filename)
                 self._scripts[filename] = script
                 logger.info('Loaded script: %s' %(filename))
@@ -80,19 +106,30 @@ class ScriptHandler:
         return self._scripts
     
     def unload_scripts(self):
+        """
+        Clears the dictionary of scripts
+        """
         self._scripts.clear()           
                     
-def callback(result):
+def _callback(result):
     print result
        
 def main():
+    """
+    Test to make sure that i runs the correct scripts with the correct commands
+    based off of the config
+    """
+    
     scriptHandler = ScriptHandler()
-    #scriptHandler.load_commands()
-    #scripts = scriptHandler.scripts
-   
-    scripts = scriptHandler.load_custom_scripts()
+    scripts = scriptHandler.load_custom_scripts() 
     command = raw_input('--->')
-    print scripts[command].run([], callback)
+    while command != 'q':
+        try:
+            print scripts[command].run([], _callback)
+            command = raw_input('--->')
+        except KeyError:
+            print "Key Error"
+            continue
 
 if __name__ == '__main__':
     main()

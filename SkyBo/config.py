@@ -14,7 +14,7 @@ TIMEOUT = 60
 CUSTOM_UNIX_SCRIPTS is the path to custom unix scripts
 that you want the bot to execute
 """
-CUSTOM_UNIX_SCRIPTS = ["/home/daniel/bin/test" ]
+CUSTOM_SCRIPTS = ["/home/daniel/bin/test"]
 
 
 """
@@ -25,7 +25,7 @@ under CUSTOM_UNIX_SCRIPTS and the command to run them is the name of the script 
 COMMANDS also overwrite the default behaviour of scripts to execute them by name if both the script is
 included in the directory in CUSTOM_UNIX_SCRIPTS and included in custom COMMANDS
 """
-COMMANDS = {"command": "/home/daniel/bin/test/helloworld.sh"}
+COMMANDS = {"!at": "/home/daniel/bin/test/anothertest.sh"}
 
 """
 LOGFILE is the variable that allows where the logfile should be saved
