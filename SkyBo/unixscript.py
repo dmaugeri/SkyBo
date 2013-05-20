@@ -18,15 +18,16 @@ class UNIXScriptModule:
     class that represents a unix script
     """
     
-    def __init__(self, name, path):
-        self.name = name
+    def __init__(self, filename, path, command):
+        self.name = filename
         self.path = path
+        self.command = command
         
     @staticmethod
     def isValid(self, path):
         return os.access(path, os.X_OK)
         
-    def run(self, msg, args, callback):
+    def run(self, args, callback):
         """
         Method to run the unix script
         
@@ -35,20 +36,11 @@ class UNIXScriptModule:
         :param: callback is the callback function that gets executed after the command finishes running
                 it must have a value as a parameter that represents the result
         """
-        
-        
-        logger.debug('Running command line program %s: with arguments %s' %(self.name, "".join(args)))
-        
-        fullname = utils.ensure_unicode(msg.Sender.FullName)
-        username = utils.ensure_unicode(msg.Sender.Handle)
-        logger.debug('Command was run by %s: with Username %s' %(fullname, username))
-        
         args.insert(0, unicode(self.path))
         
         default = 'Command %s timed out in %s seconds' % (self.name,config.TIMEOUT)
         thread = ManagedExecThread(args, default, config.TIMEOUT, callback)
         thread.Run()
-
 
 class ManagedExecThread(threading.Thread):
     """
@@ -116,8 +108,8 @@ def main():
     Before running main to test the module make sure every instance of msg in UNIXScriptModule.run()
     is timed out because it expects a Skype4Py message instance
     """
-    unix = UNIXScriptModule("ls", "ls")
-    unix.run("", ["-l"], callback)
+    unix = UNIXScriptModule("listing", "ls", "ls")
+    unix.run(["-l"], callback)
         
 if __name__ == '__main__':
     main()
