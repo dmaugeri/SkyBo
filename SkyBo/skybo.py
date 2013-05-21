@@ -5,6 +5,8 @@ Created on May 19, 2013
 '''
 import Skype4Py
 import logging
+import commandhandler
+import time
 
 logger = logging.getLogger("skybo")
 class SkyBo:
@@ -25,6 +27,7 @@ class SkyBo:
         
         self.running = True
         self.skype.OnMessageStatus = self.handleMessages
+        self.handler = commandhandler.CommandHandler()  
         
     #stops responding to messages
     def stop(self):
@@ -38,7 +41,7 @@ class SkyBo:
         #reset all the chats the bot has spoken too
         self.chats = {}
         self.running = False
-        self.skype.OnMessageStatus = self.doNothing     
+        self.skype.OnMessageStatus = self.doNothing  
     
     def doNothing(self,msg,status):
         pass
@@ -47,7 +50,7 @@ class SkyBo:
         """
         Handle incoming messages
         """
-        pass
+        self.handler.handleMessage(msg, status)
     
     def sendMessage(self, chat_id, msg):
         """
@@ -75,7 +78,10 @@ class SkyBo:
         
 
 def main():
-    pass
+    skybo = SkyBo()
+    skybo.start()
+    while True:
+        time.sleep(1)
     
 if __name__ == '__main__':
     main()

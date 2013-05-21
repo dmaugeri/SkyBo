@@ -7,6 +7,8 @@ import unixscript
 import config
 import logging
 import os
+import builtinfunctions
+import inspect
 
 logger = logging.getLogger("skybo")
 class ScriptHandler:
@@ -69,6 +71,23 @@ class ScriptHandler:
         logger.debug("Finished loading custom commands.")
         return True
     
+    def load_builtin_functions(self):
+        """
+        Loads all built in functions that are runnable
+        
+        :returns: a dictionary with all built in functions
+        """
+        
+        members = inspect.getmembers(builtinfunctions, inspect.isfunction)
+        self.builtins  = {}
+        for member in members:
+            self.builtins[member[0]] = member[1]
+            logger.info('Built in function %s was loaded' %(member[0]))
+        return self.builtins
+    
+    def get_builtin_scripts(self):
+        return self.builtins
+    
     def load_custom_scripts(self):
         """
         Function used to load all scripts defined in the Config file including
@@ -80,7 +99,6 @@ class ScriptHandler:
         """
         self.unload_scripts()
         self._loadCommands()
-        
         customScripts = None
         
         if not 'CUSTOM_SCRIPTS' in vars(config):
@@ -89,6 +107,7 @@ class ScriptHandler:
         else:
             customScripts = config.CUSTOM_SCRIPTS
         
+        logger.debug("Loading custom scripts from CUSTOM_SCRIPTS")
         for folder in customScripts:
             listing = os.listdir(folder)
             for script in listing:
@@ -102,14 +121,27 @@ class ScriptHandler:
                 script = self.load_script(filename, fullpath, filename)
                 self._scripts[filename] = script
                 logger.info('Loaded script: %s' %(filename))
-                
+        
+        logger.debug("Finished loading custom scripts.")
         return self._scripts
     
     def unload_scripts(self):
         """
         Clears the dictionary of scripts
         """
-        self._scripts.clear()           
+        self._scripts.clear()
+        logger.debug("Unloaded all the scripts")
+        
+    def get_script_by_command(self, command):
+        """
+        :return: associated script with that command name
+        """
+        try:
+            val = self._scripts[command]
+        except KeyError:
+            return None
+        
+        return val
                     
 def _callback(result):
     print result
