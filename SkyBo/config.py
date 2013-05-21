@@ -25,7 +25,7 @@ under CUSTOM_UNIX_SCRIPTS and the command to run them is the name of the script 
 COMMANDS also overwrite the default behaviour of scripts to execute them by name if both the script is
 included in the directory in CUSTOM_UNIX_SCRIPTS and included in custom COMMANDS
 """
-COMMANDS = {"!at": "/home/daniel/bin/test/anothertest.sh"}
+COMMANDS = {"at": "/home/daniel/bin/test/anothertest.sh"}
 
 """
 LOGFILE is the variable that allows where the logfile should be saved
