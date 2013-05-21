@@ -25,15 +25,18 @@ class UNIXScriptModule:
         
     @staticmethod
     def isValid(self, path):
+        """
+        :return: whether it's possible to execute the file
+        """
         return os.access(path, os.X_OK)
         
     def run(self, args, callback):
         """
         Method to run the unix script
         
-        :param: msg is the skype msg object that told the bot to run the command
-        :param: args is the arguments sent to the message it must be an array
-        :param: callback is the callback function that gets executed after the command finishes running
+        :param msg: is the skype msg object that told the bot to run the command
+        :param args: is the arguments sent to the message it must be an array
+        :param callback: is the callback function that gets executed after the command finishes running
                 it must have a value as a parameter that represents the result
         """
         args.insert(0, unicode(self.path))
