@@ -38,8 +38,15 @@ class UNIXScriptModule:
         """
         args.insert(0, unicode(self.path))
         
-        default = 'Command %s timed out in %s seconds' % (self.name,config.TIMEOUT)
-        thread = ManagedExecThread(args, default, config.TIMEOUT, callback)
+        timeout = 0
+        
+        if not 'TIMEOUT' in vars(config):
+            logger.warn("No TIMEOUT variable located in config")
+        else:
+            timeout = config.TIMEOUT
+            
+        default = 'Command %s timed out in %s seconds' % (self.name, timeout)
+        thread = ManagedExecThread(args, default, timeout, callback)
         thread.Run()
 
 class ManagedExecThread(threading.Thread):
