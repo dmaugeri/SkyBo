@@ -31,3 +31,10 @@ COMMANDS = {"at": "/home/daniel/bin/test/anothertest.sh"}
 LOGFILE is the variable that allows where the logfile should be saved
 """
 LOGFILE = "logs/skypbo.log"
+
+
+"""
+DEBUG if this value is true it adds debug output to the log file
+or else it just adds INFO output
+"""
+DEBUG = True

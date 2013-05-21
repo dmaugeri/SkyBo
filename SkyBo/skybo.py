@@ -9,6 +9,7 @@ import time
 import shlex
 import utils
 import scripthandler
+import config
 
 logger = logging.getLogger("skybo")
 class SkyBo:
@@ -108,6 +109,12 @@ class SkyBo:
         
 
 def main():
+    
+    if config.DEBUG:
+        logging.basicConfig(filename=config.LOGFILE, level=logging.DEBUG)
+    else:
+        logging.basicConfig(filename=config.LOGFILE, level=logging.INFO)
+
     skybo = SkyBo()
     skybo.start()
     while True:
