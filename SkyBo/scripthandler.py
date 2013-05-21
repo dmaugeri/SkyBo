@@ -33,8 +33,8 @@ class ScriptHandler:
         
         :return: an instance of a unix script wrapper that can be run
         """
-        if unixscript.UNIXScriptModule.isValid(self, path):
-            return unixscript.UNIXScriptModule(filename, path, command)
+        if unixscript.UNIXScript.isValid(self, path):
+            return unixscript.UNIXScript(filename, path, command)
         else:
             raise RuntimeError('Script: %s cannot be executed' %(filename))
         
