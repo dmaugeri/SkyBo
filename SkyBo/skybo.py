@@ -18,6 +18,7 @@ class SkyBo:
         self.running = False
         self.scriptHandler = scripthandler.ScriptHandler()
         self.builtins = self.scriptHandler.load_builtin_functions()
+        self.scriptHandler.load_custom_scripts()
         
     def start(self):
         """
