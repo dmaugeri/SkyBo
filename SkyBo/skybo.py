@@ -5,16 +5,18 @@ Created on May 19, 2013
 '''
 import Skype4Py
 import logging
-import commandhandler
 import time
+import shlex
+import utils
+import scripthandler
 
 logger = logging.getLogger("skybo")
 class SkyBo:
 
     def __init__(self):
-        #keeps track of the chats that the bot has spoken too
         self.running = False
-
+        self.scriptHandler = scripthandler.ScriptHandler()
+        self.builtins = self.scriptHandler.load_builtin_functions()
         
     def start(self):
         """
@@ -27,7 +29,6 @@ class SkyBo:
         
         self.running = True
         self.skype.OnMessageStatus = self.handleMessages
-        self.handler = commandhandler.CommandHandler()  
         
     #stops responding to messages
     def stop(self):
@@ -37,9 +38,6 @@ class SkyBo:
         The bot is still attached to skype    
         """
         logger.debug("Stopping from receiving messages")
-        
-        #reset all the chats the bot has spoken too
-        self.chats = {}
         self.running = False
         self.skype.OnMessageStatus = self.doNothing  
     
@@ -50,7 +48,39 @@ class SkyBo:
         """
         Handle incoming messages
         """
-        self.handler.handleMessage(msg, status)
+        if status != Skype4Py.cmsReceived:
+            return;
+        
+        chat = msg.Chat
+        body = utils.ensure_unicode(msg.Body).encode("utf-8")
+        
+        try:
+            words = shlex.split(body, comments=False, posix=True)
+        except ValueError:
+            return
+        
+        commandName = words[0]
+        commandArgs = words[1:]
+        
+        if not commandName.startswith(":"):
+            return
+        
+        commandName = commandName[1:]
+        
+        script = self.scriptHandler.get_script_by_command(commandName)
+        
+        if commandName in self.builtins:
+            self.builtins[commandName](commandArgs, msg, status, self.scriptHandler)
+            logger.info('Running built in command %s with arguments %s' %(commandName, commandArgs))
+        elif script:
+            
+            def scriptCallback(result):
+                chat.SendMessage(result)
+                
+            logger.info('Running command: %s with arguments: %s' %(commandName, commandArgs))
+            script.run(commandArgs, scriptCallback)
+        else:
+            chat.SendMessage('Don\'t know what %s does!' % commandName)
     
     def sendMessage(self, chat_id, msg):
         """
