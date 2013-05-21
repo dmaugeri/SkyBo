@@ -7,7 +7,6 @@ Created on May 19, 2013
 import threading
 import logging
 import subprocess
-import utils
 import config
 import os
 
