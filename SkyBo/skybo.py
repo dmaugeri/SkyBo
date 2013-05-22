@@ -17,8 +17,6 @@ class SkyBo:
     def __init__(self):
         self.running = False
         self.scriptHandler = scripthandler.ScriptHandler()
-        self.builtins = self.scriptHandler.load_builtin_functions()
-        self.scriptHandler.load_custom_scripts()
         
     def start(self):
         """
@@ -29,6 +27,9 @@ class SkyBo:
         self.skype.Attach()
         logger.debug("Skype attached.")
         
+        self.builtins = self.scriptHandler.load_builtin_functions()
+        self.scriptHandler.load_custom_scripts()
+
         self.running = True
         self.skype.OnMessageStatus = self.handleMessages
         
